@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<head>
+
+    <title>Canvas assignments to Notion Database</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Canvas assignments to Notion Database">
+    <meta name="description" content="The Canvas to Notion Integrator allows you to harness the productivity of Notion with the up-to-date information of Canvas.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://edutools.srg.id.au/guide/assignments-to-db/">
+    <meta property="og:title" content="Canvas assignments to Notion Database">
+    <meta property="og:description" content="The Canvas to Notion Integrator allows you to harness the productivity of Notion with the up-to-date information of Canvas.">
+    <meta property="og:image" content="../../og.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://edutools.srg.id.au/guide/assignments-to-db/">
+    <meta property="twitter:title" content="Canvas assignments to Notion Database">
+    <meta property="twitter:description" content="The Canvas to Notion Integrator allows you to harness the productivity of Notion with the up-to-date information of Canvas.">
+    <meta property="twitter:image" content="../../og.png">
+
+    <link rel="stylesheet" href="../../styles/styles.css">
+    <link rel="stylesheet" href="styles.css">
+    
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7JMMJ1J9QQ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7JMMJ1J9QQ');
+    </script>
+
+</head>
+
+<body>
+
+<article>
+
+<h1>Canvas assignments to Notion Database</h1>
+<p>
+    This will take all Canvas assigments for a course and put them in a Notion database, with due date. This can be formatted into a calendar or Kanban view.
+</p>
+
+<div id=reauth_required>
+    You have not authenticated with Notion, or your previous authentication may have expired. Please click the button below to reauthorize, then continue with the rest of the steps.<br>
+    <a class=auth-btn id=auth target="_blank" href="../../_oauth/go.html">Add to Notion <img src="https://www.notion.so/images/favicon.ico"></a>
+</div>
+
+<form>
+    <ol>
+
+        <li>Paste your course's link here: <input type=url placeholder="https://mydomain.instructure.com/courses/0000/assignments" id=course-link> and press <button id=parse-course-link>go</button>. Don't worry, this step happens entirely in your browser and it's so that we can parse your Canvas domain and course ID.</li><br>
+        <code id=course-link-output class="block not-yet">
+
+            Parsed Canvas domain: <span id=pcd>[None yet]</span><br/>
+            Parsed course ID: <span id=pcid>[None yet]</span>
+
+        </code><br>
+
+        <li>Go to <a target="_blank" class=domain-dependent data-href="https://{{canvas.domain}}/profile/settings">Canvas settings</a>, scroll down, and click '+ New Access Token'.<br>
+            You can call this token something meaningful or just enter a random value. The expiry date is the time that our servers will be restricted from accessing your account.<br>
+            If you want to use this tool a lot, you can set it to a long time in the future. Or, for added security and if you just want to use this tool once, you can set it to ~10 minutes in the future.<br>
+            Our source code is open source and easy to self-host if you prefer.<br><br>
+            <i>If your Canvas admin has disabled the generation of access tokens, you will not see the '+ New Access Token' option and you will not be able to use this tool. Sorry!</i>   
+        </li><br>
+
+        <li>You will be shown an access token. Paste this token here: <input type="text" class=monospace id=lms-access-token required> (<label><input type="checkbox" id=save_canvas_token> save this token in your local storage?</label>) </li>
+        <br>
+        
+        <li>Go to <a target="_blank" href="https://www.notion.so/shaunakg/380c311b9e2d46fbb6c0125316a255d8">this Notion table</a> and duplicate it to your own workspace.</li><br>
+        <li>You can edit everything about the duplicated table to your liking except the already-added columns (feel free to add more).</li><br>
+        <li>Share the <b>duplicated</b> table with the integration 'Canvas Tasks to Notion' by pressing the 'Add people, emails, groups or integrations' box and typing 'Canvas Tasks to Notion' in the popup.</li><br>
+
+        <li>While you're in the 'Share' panel, copy the link to the table and paste it here: <input required id="table-link" type=url> (you don't have to enable link sharing). You can also just copy the link from the browser window.</li>
+
+    </ol>
+
+    <div class="callout domain-dependent">
+        If you've followed all the steps, you are now ready to start the duplication of Canvas assignments to your Notion table. <input type=submit class=big id=go value="Click here to start">
+    </div> 
+
+    <div id=success-callout class="callout success" style="display:none">
+        
+        <h2>Success!</h2>
+        <p>
+            Check the table at <a href="#" id=to-table></a> to see your assignments in Notion.<br>
+            You can even switch to a Calendar view from the 'View' dropdown at the left.
+        </p>
+    
+    </div>
+
+    <div id=failure-callout class="callout failure" style="display:none">
+        
+        <h2>Failure</h2>
+        <pre class="block" id=fail-data></pre>
+    
+    </div>
+
+</form>
+
+</article>
+
+<script>
+
+    document.getElementById("auth").onclick = (e) => {
+        e.preventDefault();
+
+        document.getElementById("reauth_required").style.color = "black";
+
+        let win = window.open(e.target.href, 'Authorization Window', 'location=no,height=720,width=550');
+
+        win.onbeforeunload = () => {
+            if (!checkauth()) {
+                alert("Authorization with Notion has failed. Please report an issue at https://github.com/notion-canvas-integration/frontend/issues.");
+            }
+        }
+
+        // document.getElementById('reauth_required').style.display='none';
+
+    }
+
+    const checkauth = () => {
+        if ( !localStorage.getItem("notion_auth") || ((new Date().getTime() - JSON.parse(localStorage.getItem("notion_auth")).on) > 6.048e8)) {
+            document.getElementById("reauth_required").style.display = "block";
+            return false;
+        } else {
+            document.getElementById("reauth_required").style.display = "none";
+            document.getElementById("reauth_required").style.color = "black";
+            return true;
+        }
+    }
+
+    checkauth();
+
+    let canvas_domain, course, url_input = document.getElementById("course-link");
+    const between = (str, a, b) => {
+
+        return str.split("/")[4]
+
+    }
+
+    if ( new URLSearchParams(location.search).get("prefill") ) {
+
+        const pfj = JSON.parse(new URLSearchParams(location.search).get("prefill"));
+
+        Object.keys(pfj).forEach(k => {
+
+            document.getElementById(k).value = pfj[k];
+
+        });
+
+        if (Object.keys(pfj).includes("course-link")) { document.getElementById("parse-course-link").click() }
+
+    }
+
+    if (window.localStorage.getItem("canvas_token")) {
+        document.getElementById("lms-access-token").value = window.localStorage.getItem("canvas_token");
+        document.getElementById("save_canvas_token").checked = true;
+    }
+
+    document.getElementById("parse-course-link").onclick = (e) => {
+
+        e.preventDefault();
+
+        canvas_domain = new URL(url_input.value).hostname;
+        course = between(url_input.value, "courses/", "/");
+
+        document.querySelectorAll(".domain-dependent").forEach((e) => {
+
+            e.classList.remove("domain-dependent");
+            if (e.dataset.href) {
+                e.href = e.dataset.href.replaceAll("{{canvas.domain}}", canvas_domain);
+            }
+
+        });
+
+        document.getElementById("pcd").innerText = canvas_domain;
+        document.getElementById("pcid").innerText = course;
+
+        document.getElementById("course-link-output").classList.remove("not-yet");
+ 
+    }
+
+    document.getElementById("go").onclick = (e) => {
+
+        e.preventDefault();
+        e.target.disabled = true;
+        
+        !document.getElementById("save_canvas_token").checked && localStorage.removeItem("canvas_token")
+
+        document.getElementById("success-callout").style.display = "none";
+        document.getElementById("failure-callout").style.display = "none";
+        
+        fetch("https://notion-canvas-2imy5ahygq-ts.a.run.app/actions/assn2db", {
+            method: 'POST',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            redirect: 'follow',
+            body: JSON.stringify({
+                cdom: canvas_domain,
+                cid: course,
+                notionUri: document.getElementById("table-link").value,
+                ctoken: document.getElementById("lms-access-token").value,
+                notion_token: JSON.parse(localStorage.getItem("notion_auth")).code
+            })
+        }).then(r => r.json()).then(j => {
+
+            if (j.success) {
+
+                document.getElementById("success-callout").style.display = "block";
+                document.getElementById("to-table").href = document.getElementById("table-link").value;
+                document.getElementById("to-table").innerText = document.getElementById("table-link").value;
+
+                document.getElementById("save_canvas_token").checked && window.localStorage.setItem("canvas_token", document.getElementById("lms-access-token").value);
+
+                e.target.disabled = false;
+
+            } else {
+
+                document.getElementById("failure-callout").style.display = "block";
+                document.getElementById('fail-data').innerHTML = JSON.stringify(j, null, 2);
+
+                e.target.disabled = false;
+            
+                if (j.reauth) {
+                    document.getElementById("reauth_required").style.display = "block";
+                    document.getElementById("reauth_required").style.color = "red";
+                    document.getElementById("reauth_required").scrollIntoView();
+                }
+
+            }
+
+        }).catch(e => {
+
+            document.getElementById("failure-callout").style.display = "block";
+            document.getElementById('fail-data').innerHTML = JSON.stringify(e, null, 2);
+
+            e.target.disabled = false;
+
+        });
+
+    }
+
+</script>
+
+</body>

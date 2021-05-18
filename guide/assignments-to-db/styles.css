@@ -1,0 +1,33 @@
+
+.domain-dependent {
+    opacity: 0.5;
+}
+
+.domain-dependent:after {
+    content: " (not available until you enter your course URL)";
+}
+
+.block {
+    display: block;
+    overflow-x: scroll;
+}
+
+.block.not-yet { opacity: 0.5; user-select: none; cursor: not-allowed; }
+
+code.block {
+    background: #EEE;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.callout {
+    display: block;
+    padding: 20px;
+    border: 1px solid #EEE;
+    margin: 15x 0;
+}
+
+.callout.success { border: 1px solid green; }
+.callout.failure { border: 1px solid red; }
+
+code.block span { user-select: all; }

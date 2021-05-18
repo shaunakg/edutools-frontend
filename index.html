@@ -1,0 +1,135 @@
+<!-- 
+welcome !! notion edutools is a set of tools for notion that are designed for students by students, mostly built off of Notion's API.
+This site is built on HTML, CSS and JS with some modules for ease of use.
+ -->
+
+<!doctype html>
+
+<head>
+
+    <!-- Primary Meta Tags -->
+    <title>Edutools for Notion - Built by students, for students</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="images/icon.png">
+
+    <meta name="title" content="Edutools for Notion - Built by students, for students">
+    <meta name="description" content="With Edutools you can harness the power of Notion with the educational software provided by many schools.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://edutools.srg.id.au/">
+    <meta property="og:title" content="Edutools for Notion - Built by students, for students">
+    <meta property="og:description" content="With Edutools you can harness the power of Notion with the educational software provided by many schools.">
+    <meta property="og:image" content="images/og.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://edutools.srg.id.au/">
+    <meta property="twitter:title" content="Edutools for Notion - Built by students, for students">
+    <meta property="twitter:description" content="With Edutools you can harness the power of Notion with the educational software provided by many schools.">
+    <meta property="twitter:image" content="images/og.png">
+
+    <link rel="icon" href="images/icon.png">
+
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/index.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7JMMJ1J9QQ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-7JMMJ1J9QQ');
+    </script>
+
+</head>
+
+<body>
+
+    <article>
+
+        <!-- <h1 class=edutools-logo>Edutools</h1> -->
+        <video style="display:none;" class="edutools-intro" id=intro-video autoplay muted></video>
+        <img
+            alt="Edutools logo, consisting of large, bold text saying Edutools and the words 'for Notion' below it. Below that, there is a subtitle which states 'built by students, for students'"
+            class="edutools-intro"
+            id="intro-image"
+            src="images/intro/edutools-intro-sml.png"
+        >
+
+        <h2>Table of Contents</h2>
+        <nav class=toc>
+            <ul id=toc></ul>
+        </nav>
+
+        <h2>Introduction</h2>
+        <p>
+            Welcome to Edutools for Notion, a set of integrations and templates for Notion specially optimized for education.
+        </p>
+
+        <h2>Services</h2>
+        <h3>Integrations with Canvas <img style="height: 1.5em; vertical-align: middle;" src="images/ext-logos/Canvas-Logo.png"></h3>
+        <ul>
+            
+        </ul>
+
+    </article>
+
+    <script src="https://cdn.jsdelivr.net/npm/slugify/slugify.min.js"></script>
+
+    <script>
+
+        const pickone = (l) => l[ Math.round(Math.random() * (l.length - 1))];
+
+        const makeid = (l) => {
+            id = "";
+            dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-_";
+
+            for (i = 0; i < l; i++) {
+                id += dict[ Math.round(Math.random() * (dict.length-1)) ]
+            }
+
+            return id;
+        }
+
+        document.getElementById("intro-image").style.display = "none";
+        document.getElementById("intro-video").style.display = "block";
+
+        document.getElementById("intro-video").onerror = (e) => {
+            console.log("Error while loading intro video, defaulting to image.")
+            e.target.style.display = "none";
+            document.getElementById("intro-image").style.display = "block";
+        }
+
+        document.getElementById("intro-video").src = `images/intro/videos/edutools-intro-sml-${pickone(['fade', 'pan', 'rise'])}.mp4`;
+
+        document.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach((x, i) => {
+
+            x.id = x.id || slugify(x.innerText);
+            let title = x.innerText;
+            let link = "#" + x.id;
+
+            let li = document.createElement("li");
+            li.innerText = title;
+
+            let a = document.createElement("a");
+            a.innerText = " #";
+            a.href = link;
+            a.style.textDecoration = "none";
+
+            li.appendChild(a);
+            x.appendChild(a);
+
+            document.getElementById("toc").appendChild(li);
+            li.style.marginLeft = ((parseInt(x.tagName[1]) - 1) * 15).toString() + "px";
+
+        });
+
+    </script>
+
+</body>
