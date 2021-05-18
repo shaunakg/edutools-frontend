@@ -122,8 +122,8 @@ This site is built on HTML, CSS and JS with some modules for ease of use.
             a.href = link;
             a.style.textDecoration = "none";
 
-            li.appendChild(a);
-            x.appendChild(a);
+            li.appendChild(a.cloneNode(true));
+            x.appendChild(a.cloneNode(true));
 
             document.getElementById("toc").appendChild(li);
             li.style.marginLeft = ((parseInt(x.tagName[1]) - 1) * 15).toString() + "px";
