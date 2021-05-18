@@ -2,31 +2,30 @@
 
 <head>
 
-    <title>Canvas assignments to Notion Database</title>
+    <title>Canvas calendar to Notion Database</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="../../images/icon.png">
 
     <!-- Primary Meta Tags -->
-    <meta name="title" content="Canvas assignments to Notion Database">
+    <meta name="title" content="Canvas calendar to Notion Database">
     <meta name="description" content="The Canvas to Notion Integrator allows you to harness the productivity of Notion with the up-to-date information of Canvas.">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://edutools.srg.id.au/guide/assignments-to-db/">
-    <meta property="og:title" content="Canvas assignments to Notion Database">
+    <meta property="og:url" content="https://edutools.srg.id.au/guide/calendar-to-db/">
+    <meta property="og:title" content="Canvas calendar to Notion Database">
     <meta property="og:description" content="The Canvas to Notion Integrator allows you to harness the productivity of Notion with the up-to-date information of Canvas.">
     <meta property="og:image" content="../../og.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://edutools.srg.id.au/guide/assignments-to-db/">
-    <meta property="twitter:title" content="Canvas assignments to Notion Database">
+    <meta property="twitter:url" content="https://edutools.srg.id.au/guide/calendar-to-db/">
+    <meta property="twitter:title" content="Canvas calendar to Notion Database">
     <meta property="twitter:description" content="The Canvas to Notion Integrator allows you to harness the productivity of Notion with the up-to-date information of Canvas.">
     <meta property="twitter:image" content="../../og.png">
 
     <link rel="stylesheet" href="../../styles/styles.css">
     <link rel="stylesheet" href="../styles.css">
-    
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-7JMMJ1J9QQ"></script>
@@ -44,9 +43,10 @@
 
 <article>
 
-<h1>Canvas assignments to Notion Database</h1>
+<h1>Canvas calendar to Notion Database</h1>
 <p>
-    This will take all Canvas assigments for a course and put them in a Notion database, with due date. This can be formatted into a calendar or Kanban view.
+    This will take all Canvas assignments in your calendar and put them in a Notion database, with due date. This can be formatted into a calendar or Kanban view.<br/><br/>
+    <i>Note, unlike the "assignments to database" integration, this one does not currently support individual courses. It does still label each entry with its associated course, so you can filter.</i>
 </p>
 
 <div id=reauth_required>
@@ -60,8 +60,8 @@
         <li>Paste your course's link here: <input type=url placeholder="https://mydomain.instructure.com/courses/0000/assignments" id=course-link> and press <button id=parse-course-link>go</button>. Don't worry, this step happens entirely in your browser and it's so that we can parse your Canvas domain and course ID.</li><br>
         <code id=course-link-output class="block not-yet">
 
-            Parsed Canvas domain: <span id=pcd>[None yet]</span><br/>
-            Parsed course ID: <span id=pcid>[None yet]</span>
+            Parsed Canvas domain: <span id=pcd>[None yet]</span><br/><br/>
+            <i>Note, unlike the "assignments to database" integration, this one does not currently support individual courses.</i>
 
         </code><br>
 
@@ -84,7 +84,8 @@
     </ol>
 
     <div class="callout domain-dependent">
-        If you've followed all the steps, you are now ready to start the duplication of Canvas assignments to your Notion table. <input type=submit class=big id=go value="Click here to start">
+        If you've followed all the steps, you are now ready to start the duplication of Canvas assignments to your Notion table. <br/>
+        <input type=submit class=big id=go value="Click here to start">
     </div> 
 
     <div id=success-callout class="callout success" style="display:none">
@@ -140,7 +141,7 @@
 
     checkauth();
 
-    let canvas_domain, course, url_input = document.getElementById("course-link");
+    let canvas_domain, url_input = document.getElementById("course-link");
     const between = (str, a, b) => {
 
         return str.split("/")[4]
@@ -171,7 +172,6 @@
         e.preventDefault();
 
         canvas_domain = new URL(url_input.value).hostname;
-        course = between(url_input.value, "courses/", "/");
 
         document.querySelectorAll(".domain-dependent").forEach((e) => {
 
@@ -183,7 +183,6 @@
         });
 
         document.getElementById("pcd").innerText = canvas_domain;
-        document.getElementById("pcid").innerText = course;
 
         document.getElementById("course-link-output").classList.remove("not-yet");
  
@@ -199,7 +198,7 @@
         document.getElementById("success-callout").style.display = "none";
         document.getElementById("failure-callout").style.display = "none";
         
-        fetch("https://notion-canvas-2imy5ahygq-ts.a.run.app/actions/assn2db", {
+        fetch("https://notion-canvas-2imy5ahygq-ts.a.run.app/actions/calen2db", {
             method: 'POST',
             cache: 'no-cache',
             headers: {
@@ -208,7 +207,6 @@
             redirect: 'follow',
             body: JSON.stringify({
                 cdom: canvas_domain,
-                cid: course,
                 notionUri: document.getElementById("table-link").value,
                 ctoken: document.getElementById("lms-access-token").value,
                 notion_token: JSON.parse(localStorage.getItem("notion_auth")).code

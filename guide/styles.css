@@ -1,6 +1,7 @@
 
 .domain-dependent {
     opacity: 0.5;
+    pointer-events: none;
 }
 
 .domain-dependent:after {
@@ -31,3 +32,15 @@ code.block {
 .callout.failure { border: 1px solid red; }
 
 code.block span { user-select: all; }
+
+input[type=submit].big, button.big {
+    padding: 8px;
+    background-color: white;
+    border: 1px solid black;
+    margin: 20px 0;
+    display: block;
+
+    border-radius: 3px;
+}
+
+input[type=submit], button, .btn { cursor: pointer; }
