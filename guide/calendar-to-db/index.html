@@ -81,6 +81,8 @@
 
         <li>While you're in the 'Share' panel, copy the link to the table and paste it here: <input required id="table-link" type=url> (you don't have to enable link sharing). You can also just copy the link from the browser window.</li>
 
+        <li>The program will normally fetch assignments from your calendar. <label>If you want to fetch <b>events</b>, tick this box: <input id=fetch-events type="checkbox"></label></li>
+
     </ol>
 
     <div class="callout domain-dependent">
@@ -198,7 +200,7 @@
         document.getElementById("success-callout").style.display = "none";
         document.getElementById("failure-callout").style.display = "none";
 
-        api_domain = new URLSearchParams(location.search).get("local") ? "http://vcap.me:8080":"https://edutools-2imy5ahygq-uc.a.run.app"
+        api_domain = new URLSearchParams(location.search).get("local") ? "http://vcap.me:8080":"https://api.edutools.srg.id.au"
         
         fetch(api_domain + "/actions/calen2db", {
             method: 'POST',
@@ -211,7 +213,8 @@
                 cdom: canvas_domain,
                 notionUri: document.getElementById("table-link").value,
                 ctoken: document.getElementById("lms-access-token").value,
-                notion_token: JSON.parse(localStorage.getItem("notion_auth")).code
+                notion_token: JSON.parse(localStorage.getItem("notion_auth")).code,
+                return_events: document.getElementById("fetch-events").checked
             })
         }).then(r => r.json()).then(j => {
 
