@@ -65,3 +65,20 @@ body article {
     border-radius: 2px;
 
 }
+
+.site-has-moved {
+    padding: 20px;
+    background-color: #272932;
+    color: white;
+
+    margin-bottom: 20px;
+    cursor: pointer;
+
+    border: 2px solid coral;
+    border-radius: 2px;
+
+}
+
+.site-has-moved .small {
+    font-size: 0.7em;
+}
