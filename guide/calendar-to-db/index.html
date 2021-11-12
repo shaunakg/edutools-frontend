@@ -201,10 +201,8 @@
 
         document.getElementById("success-callout").style.display = "none";
         document.getElementById("failure-callout").style.display = "none";
-
-        api_domain = new URLSearchParams(location.search).get("local") ? "http://vcap.me:8080":"https://api.edutools.srg.id.au"
         
-        fetch(api_domain + "/actions/calen2db", {
+        fetch(window.api + "/actions/calen2db", {
             method: 'POST',
             cache: 'no-cache',
             headers: {

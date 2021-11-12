@@ -50,7 +50,7 @@
 </p>
 
 <div id=reauth_required>
-    You have not authenticated with Notion, or your previous authentication may have expired. Please click the button below to reauthorize, then continue with the rest of the steps.<br>
+    You have not authenticated with Notion, or your previous authentication may have expired. Please click the button below to reauthorize, then <b>continue with the rest of the steps.</b><br>
     <a class=auth-btn id=auth target="_blank" href="../../_oauth/go.html">Add to Notion <img src="https://www.notion.so/images/favicon.ico"></a>
 </div>
 
@@ -94,6 +94,11 @@
             Check the table at <a href="#" id=to-table></a> to see your assignments in Notion.<br>
             You can even switch to a Calendar view from the 'View' dropdown at the left.
         </p>
+
+        <div style="display:none" id="partial-success">
+            <h4>Please note that the following assignments could not be inserted.</h4>
+            <ul id="partial-success-ul"></ul>
+        </div>
     
     </div>
 
@@ -119,11 +124,11 @@
 
         let win = window.open(e.target.href, 'Authorization Window', 'location=no,height=720,width=550');
 
-        win.onbeforeunload = () => {
-            if (!checkauth()) {
-                alert("Authorization with Notion has failed. Please report an issue at https://github.com/notion-canvas-integration/frontend/issues.");
-            }
-        }
+        // win.onbeforeunload = () => {
+        //     if (!checkauth()) {
+        //         alert("Authorization with Notion has failed. Please report an issue at https://github.com/notion-canvas-integration/frontend/issues.");
+        //     }
+        // }
 
         // document.getElementById('reauth_required').style.display='none';
 
@@ -207,7 +212,7 @@
         document.getElementById("success-callout").style.display = "none";
         document.getElementById("failure-callout").style.display = "none";
         
-        fetch("https://api.edutools.srg.id.au/actions/assn2db", {
+        fetch(window.api + "/actions/assn2db", {
             method: 'POST',
             cache: 'no-cache',
             headers: {
@@ -232,6 +237,20 @@
                 document.getElementById("save_canvas_token").checked && window.localStorage.setItem("canvas_token", document.getElementById("lms-access-token").value);
 
                 e.target.disabled = false;
+
+                if (j.success === "partial") {
+
+                    for (const assn of j.errored_on) {
+
+                        const li = document.createElement("li");
+                        li.innerText = assn.name;
+                        document.getElementById("partial-success-ul").appendChild(li)
+                        
+                    }
+
+                    document.getElementById("partial-success").style.display = "block";
+
+                }
 
             } else {
 

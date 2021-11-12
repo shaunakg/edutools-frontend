@@ -11,3 +11,5 @@ if (new URLSearchParams(location.search).get("from_old")) {
     document.querySelector("article").prepend(siteHasMovedWarning);
 
 }
+
+window.api = "https://edutools-2imy5ahygq-uc.a.run.app"
